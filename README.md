@@ -33,8 +33,8 @@ kobo-send                        # start empty, add books from the browser
 It prints two addresses:
 
 ```
-On the Kobo:  More > Beta Features > Web Browser > http://192.168.1.23:8080
-On this Mac:  http://localhost:8080 (drop more books here)
+On the Kobo:  More > Beta Features > Web Browser > http://192.168.1.23:8765
+On this Mac:  http://localhost:8765 (drop more books here)
 ```
 
 On the Kobo, open the first address and tap a book. It downloads and shows up in the library. Bookmark the page so you only type the address once.
@@ -45,7 +45,7 @@ Both devices must be on the same Wi-Fi network. If macOS asks whether to allow i
 
 | Flag | Effect |
 | --- | --- |
-| `-port 8080` | Port to listen on. |
+| `-port 8765` | Port to listen on. |
 | `-no-kepub` | Serve EPUBs unchanged. |
 | `-ascii` | Strip non-ASCII characters from download file names. Try this if a book with accents in its name fails to download. |
 

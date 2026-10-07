@@ -22,7 +22,7 @@ var version = "dev"
 
 func main() {
 	showVersion := flag.Bool("version", false, "print the version and exit")
-	port := flag.Int("port", 8080, "port to listen on")
+	port := flag.Int("port", 8765, "port to listen on")
 	noKepub := flag.Bool("no-kepub", false, "serve EPUBs as they are instead of converting to KEPUB")
 	ascii := flag.Bool("ascii", false, "strip non-ASCII characters from download file names")
 	flag.Usage = func() {
