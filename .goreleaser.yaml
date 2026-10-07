@@ -1,0 +1,91 @@
+# Builds kobo-send for macOS and Linux, publishes a GitHub release and updates
+# the Homebrew formula in mumudevx/homebrew-tap.
+
+version: 2
+
+project_name: kobo-send
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: kobo-send
+    main: ./cmd/kobo-send
+    binary: kobo-send
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - arm64
+      - amd64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: kobo-send
+    ids:
+      - kobo-send
+    formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+# A formula, not a cask: Homebrew quarantines cask downloads, which would put
+# an unsigned binary in front of Gatekeeper. Same choice as mumudevx/dpi-bypass-mac.
+brews:
+  - name: kobo-send
+    ids:
+      - kobo-send
+    repository:
+      owner: mumudevx
+      name: homebrew-tap
+      # Must be `{{ .Env.NAME }}` and nothing else; the workflow always defines
+      # it, and skip_upload decides whether the push happens.
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    skip_upload: '{{ if index .Env "GORELEASER_SKIP_BREW" }}{{ .Env.GORELEASER_SKIP_BREW }}{{ else }}true{{ end }}'
+    directory: Formula
+    homepage: "https://github.com/mumudevx/kobo-wifi-transfer"
+    description: "Send EPUB and PDF files to a Kobo e-reader over Wi-Fi"
+    license: "MIT"
+    commit_author:
+      name: goreleaser
+      email: noreply@github.com
+    install: |
+      bin.install "kobo-send"
+    test: |
+      assert_match version.to_s, shell_output("#{bin}/kobo-send -version")
+
+release:
+  github:
+    owner: mumudevx
+    name: kobo-wifi-transfer
+  prerelease: auto
+  footer: |
+    ---
+
+    Install:
+
+        brew tap mumudevx/tap
+        brew trust mumudevx/tap
+        brew install kobo-send
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
